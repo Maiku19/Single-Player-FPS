@@ -14993,8 +14993,8 @@ GameObject:
   - component: {fileID: 8977313831385323754}
   - component: {fileID: 8977313831385323767}
   - component: {fileID: 8977313831385323764}
-  - component: {fileID: 8977313831385323763}
   - component: {fileID: 8977313831385323760}
+  - component: {fileID: 8977313831385323763}
   - component: {fileID: 8977313831385323761}
   - component: {fileID: 8977313831385323762}
   - component: {fileID: 7119447265816793519}
@@ -15074,21 +15074,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8977313831385323763
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8977313831385323755}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb609e97808d6df4aabc91e695cfe4a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouseSensitivity: 100
-  playerBody: {fileID: 8977313831385323754}
-  fpsCamera: {fileID: 4026285562830387984}
 --- !u!114 &8977313831385323760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15106,6 +15091,21 @@ MonoBehaviour:
   deaths: 0
   assists: 0
   teamId: 0
+--- !u!114 &8977313831385323763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8977313831385323755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb609e97808d6df4aabc91e695cfe4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseSensitivity: 100
+  playerBody: {fileID: 8977313831385323754}
+  fpsCamera: {fileID: 4026285562830387984}
 --- !u!114 &8977313831385323761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15139,14 +15139,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 8977313831385323755}
   speed: 50
-  topSpeed: 2
-  jumpHeight: 50
+  topSpeed: 10
+  jumpHeight: 2
   groundCheck: {fileID: 8977313832084595235}
   groundDistance: 0.1
   groudMask:
     serializedVersion: 2
     m_Bits: 8
-  gravity: -654
 --- !u!114 &7119447265816793519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15169,8 +15168,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8977313831385323755}
   serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 10
+  m_Mass: 0.0000001
+  m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 0
   m_IsKinematic: 0
