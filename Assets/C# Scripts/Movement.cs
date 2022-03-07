@@ -25,6 +25,8 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
+        // TODO: Add movement deceleration
+
         DoGroundCheck();
         Jump();
         SimulateGravity();

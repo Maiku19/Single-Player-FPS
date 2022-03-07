@@ -23,7 +23,6 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float damage, Transform damager)
     {
-        print(damager);
         health -= damage;
         if (healthBar != null) healthBar.value = health;
         if (dis != null) { dis.SpawnIndicator(damager, transform); }
