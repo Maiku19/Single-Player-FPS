@@ -17,6 +17,7 @@ namespace Mike
             }
         }
 
+        [System.Obsolete("Use transform.root instead")]
         public static Transform GetParentOfParents(Transform transform)
         {
             Transform parent = transform;

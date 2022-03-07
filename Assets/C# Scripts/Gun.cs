@@ -89,9 +89,9 @@ public class Gun : MonoBehaviour
 
         //if has no ammo reload and return
         if (!useMouseInput) { return; }
-        if (Input.GetKeyDown(KeyCode.R) && !reloading) { StartCoroutine(Reload()); }
-        if (!automatic && !Input.GetMouseButtonDown(0)) { return; }
-        else if (!Input.GetMouseButton(0)) { return; }
+        if (Input.GetKeyDown(KeyBinds.Reload) && !reloading) { StartCoroutine(Reload()); }
+        if (!automatic && !Input.GetKeyDown(KeyBinds.Shoot)) { return; }
+        else if (!Input.GetKey(KeyBinds.Shoot)) { return; }
 
         Shoot();
     }
