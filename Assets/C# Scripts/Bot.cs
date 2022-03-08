@@ -60,6 +60,7 @@ public class Bot : MonoBehaviour
     Vector3 destination;
     GameObject[] movementPoints = new GameObject[0];
     bool searchForTargets = true;
+    bool useDynamicDifficulty = true;
 
     #endregion
 
@@ -71,6 +72,9 @@ public class Bot : MonoBehaviour
 
     void Start()
     {
+        useDynamicDifficulty = 1 == PlayerPrefs.GetInt($"Use Dynamic Difficulty {tag}", useDynamicDifficulty ? 1 : 0);
+        difficulty = PlayerPrefs.GetFloat($"Difficulty {tag}", useDynamicDifficulty ? 1 : 0);
+
         GetMovementPoints();
         InitializeMovement();
         GetTargetPool();

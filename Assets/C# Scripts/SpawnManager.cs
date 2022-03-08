@@ -33,7 +33,11 @@ public class SpawnManager : MonoBehaviour
 
     private void Start()
     {
+        numberOfPlayersOnTeam1 = PlayerPrefs.GetInt("Players Team1", numberOfPlayersOnTeam1);
+        numberOfPlayersOnTeam2 = PlayerPrefs.GetInt("Players Team2", numberOfPlayersOnTeam2);
+
         if (ValidateSpawnPoints()) SpawnPlayers();
+
     }
 
     void SpawnPlayers()

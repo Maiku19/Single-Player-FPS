@@ -11,7 +11,8 @@ public class ScoreManager : MonoBehaviour
     public static float Score1 { get; set; }
     public static float Score2 { get; set; }
 
-    public float victoryCondition;
+    public float victoryConditionTeam1;
+    public float victoryConditionTeam2;
 
     static Stats[] team1Players;
     static Stats[] team2Players;
@@ -34,6 +35,11 @@ public class ScoreManager : MonoBehaviour
 
     private void Start()
     {
+        victoryConditionTeam1 = PlayerPrefs.GetFloat("Score Limit Team1", victoryConditionTeam1);
+        victoryConditionTeam2 = PlayerPrefs.GetFloat("Score Limit Team2", victoryConditionTeam2);
+
+        matchTime = PlayerPrefs.GetFloat("Time Limit", matchTime);
+
         Initialize();
         StartCoroutine(IncrementTimer());
     }
@@ -64,7 +70,7 @@ public class ScoreManager : MonoBehaviour
             GameObject scoreCounter = GameObject.FindGameObjectWithTag("Score1");
             scoreCounter.GetComponent<TMPro.TextMeshProUGUI>().text = Score1.ToString();
             scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().value = Score1;
-            scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().maxValue = victoryCondition;
+            scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().maxValue = victoryConditionTeam1;
         }
         else
         {
@@ -72,7 +78,7 @@ public class ScoreManager : MonoBehaviour
             GameObject scoreCounter = GameObject.FindGameObjectWithTag("Score2");
             scoreCounter.GetComponent<TMPro.TextMeshProUGUI>().text = Score2.ToString();
             scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().value = Score2;
-            scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().maxValue = victoryCondition;
+            scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().maxValue = victoryConditionTeam2;
         }
 
         
@@ -84,7 +90,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (!matchInProgress) { return; }
 
-        if(Score1 >= victoryCondition || Score2 >= victoryCondition)
+        if(Score1 >= victoryConditionTeam1 || Score2 >= victoryConditionTeam2)
         {
             StartCoroutine(EndMatch());
         }
@@ -126,8 +132,8 @@ public class ScoreManager : MonoBehaviour
 
     void DeclareWiner()
     {
-        if(Score1 >= victoryCondition) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam1Victory(); }
-        if(Score2 >= victoryCondition) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam2Victory(); }
+        if(Score1 >= victoryConditionTeam1) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam1Victory(); }
+        if(Score2 >= victoryConditionTeam2) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam2Victory(); }
     }
 
     private static void Initialize()
