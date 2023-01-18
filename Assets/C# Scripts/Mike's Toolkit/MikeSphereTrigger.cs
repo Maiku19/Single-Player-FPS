@@ -29,7 +29,7 @@ namespace Mike
 
             if (hits.Length > 0)
             {
-                RaycastHit bestHit = new RaycastHit();
+                RaycastHit bestHit = new();
                 float bestDistance = Mathf.Infinity;
 
                 foreach (RaycastHit hit in hits)
@@ -56,7 +56,7 @@ namespace Mike
 
             RaycastHit[] hits = Physics.SphereCastAll(lastPosition + finalOffset, radius, transform.position - lastPosition + finalOffset, Vector3.Distance(lastPosition + finalOffset, transform.position + finalOffset));
 
-            if (hits.Length > 0)
+            if (hits != null && hits.Length > 0)
             {
                 bool found = false;
                 RaycastHit bestHit = hits[0];

@@ -26,6 +26,8 @@ public class Gun : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private bool useAmmoCounter = false;
 
+    [SerializeField] AudioSource[] _soundToPlay = new AudioSource[0]; 
+
     [Header("MuzzleFlash")]
     [SerializeField] private GameObject muzzleFlash;
     [SerializeField] private ParticleSystem[] muzzleFlashesToPlay;
@@ -118,6 +120,11 @@ public class Gun : MonoBehaviour
         {
             particleSystem.Play();
         }
+
+        foreach (AudioSource audio in _soundToPlay)
+        {
+            audio.Play();
+        }
     }
 
     public void RefillMag()
@@ -179,7 +186,4 @@ public class Gun : MonoBehaviour
         bulletInstance.range = maxRange;
         bulletInstance.tag = MikeTransform.GetParentOfParents(transform).tag;
     }
-
-    //LOL
-
 }

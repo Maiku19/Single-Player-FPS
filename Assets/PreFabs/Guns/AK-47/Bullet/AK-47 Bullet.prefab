@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2880663102810109272}
   - component: {fileID: 2880663102810109278}
-  - component: {fileID: 2880663102810109273}
   - component: {fileID: 2190850732260475111}
+  - component: {fileID: 1215420969862060283}
   m_Layer: 0
   m_Name: AK-47 Bullet
   m_TagString: Untagged
@@ -27,8 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2880663102810109275}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0462}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -52,25 +53,6 @@ MonoBehaviour:
   damage: 0
   range: 0
   shooter: {fileID: 0}
---- !u!114 &2880663102810109273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2880663102810109275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fca034454c00cb49bb377deec4ac669, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 0.05
-  useOffsetRelativeToRotation: 1
-  offset: {x: 0, y: 0, z: 0}
-  useFixedUpdate: 0
-  showGizmos: 0
-  disableOnHit: 1
-  colideWithTriggers: 0
 --- !u!96 &2190850732260475111
 TrailRenderer:
   serializedVersion: 2
@@ -83,6 +65,7 @@ TrailRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 0
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
@@ -120,31 +103,22 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.002793296
-        value: 0
-        inSlope: 6.046191
-        outSlope: 6.046191
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.10796382
-      - serializedVersion: 3
-        time: 0.4972781
+        time: 0
         value: 1
-        inSlope: 0.032668963
-        outSlope: 0.032668963
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.38536832
+        outWeight: 0.15750746
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: -5.6921935
-        outSlope: -5.6921935
+        inSlope: -3.479703
+        outSlope: -3.479703
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.10616385
+        inWeight: 0.10000809
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -178,12 +152,31 @@ TrailRenderer:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 2
-    numCapVertices: 6
+    numCornerVertices: 0
+    numCapVertices: 3
     alignment: 0
-    textureMode: 1
+    textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_MinVertexDistance: 0.0005
+  m_MinVertexDistance: 0.01
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &1215420969862060283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2880663102810109275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fca034454c00cb49bb377deec4ac669, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.075
+  useOffsetRelativeToRotation: 1
+  offset: {x: 0, y: 0, z: 0}
+  useFixedUpdate: 0
+  showGizmos: 1
+  disableOnHit: 1
+  colideWithTriggers: 0

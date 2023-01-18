@@ -13,6 +13,8 @@ public class Look : MonoBehaviour
     public static Look Instance { get { return _Instance; } }
     static Look _Instance;
 
+    public float MouseX { get; private set; }
+    public float MouseY { get; private set; }
 
     private void Awake()
     {
@@ -30,13 +32,13 @@ public class Look : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * 100 * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * 100 * Time.deltaTime;
+        MouseX = Input.GetAxis("Mouse X") * mouseSensitivity * 100 * Time.deltaTime;
+        MouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * 100 * Time.deltaTime;
 
-        xRotation -= mouseY;
+        xRotation -= MouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         fpsCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        playerBody.Rotate(Vector3.up * mouseX);
+        playerBody.Rotate(Vector3.up * MouseX);
     }
 }

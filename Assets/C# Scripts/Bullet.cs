@@ -12,17 +12,13 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public float range;
     [HideInInspector] public Transform shooter;
 
-    bool stop = false;
-
     void Start()
     {
         StartCoroutine(DestroyAtMaxRange());
     }
 
-    void Update()
+    private void Update()
     {
-        if (stop) { return; }
-
         transform.position += speed * Time.deltaTime * transform.forward;
     }
 
@@ -31,31 +27,30 @@ public class Bullet : MonoBehaviour
         if(speed > 0) yield return new WaitForSeconds(range / speed);
 
         // wait until trail dissapears
-        stop = true;
         Destroy(gameObject, .1f);
     }
 
     void OnMikeSphereTriggerEnter(RaycastHit hit)
     {
-
         // wait until trail dissapears
-        stop = true;
         Destroy(gameObject, .1f);
+
+        speed = 0;
+        transform.position = hit.point;
 
 
         // WOW I DID NOT KNOW A METHOD LIKE VECTOR3/2.REFLECT EXISTS! THIS IS A LIFE SAVER!
-        if(hitEffect != null) Instantiate(hitEffect, hit.point, Quaternion.FromToRotation(Vector3.forward, Vector3.Reflect(transform.TransformDirection(Vector3.forward), hit.normal)));
+        if(hitEffect != null) Instantiate(hitEffect, transform.position, Quaternion.FromToRotation(Vector3.forward, Vector3.Reflect(transform.TransformDirection(Vector3.forward), hit.normal)));
 
 
         // check for friendly fire
         if (hit.transform.root.CompareTag(tag) && hit.transform.gameObject.layer != 6) { return; }
 
 
-        if(hit.transform.GetComponent<Health>() != null) hit.transform.GetComponent<Health>().TakeDamage(damage, shooter);
+        if(hit.transform.TryGetComponent(out Health h)) h.TakeDamage(damage, shooter);
         else { return; }
 
-
-        SpawnHitIndicator(hit.collider.gameObject);
+        SpawnHitIndicator(hit.transform.gameObject);
     }
 
     #region hit indicator

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private GameObject botPrefab;
+    [SerializeField] private Player playerPrefab;
+    [SerializeField] private Player botPrefab;
     [SerializeField] private float respawnTime = 5;
 
     [SerializeField] private int playerTeam = 1;
@@ -15,8 +15,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private Material team1Material;
     [SerializeField] private Material team2Material;
 
-    GameObject[] playersOnTeam1 = new GameObject[0];
-    GameObject[] playersOnTeam2 = new GameObject[0];
+    Player[] playersOnTeam1 = new Player[0];
+    Player[] playersOnTeam2 = new Player[0];
 
     static SpawnManager _Instance;
     public static SpawnManager Instance
@@ -37,11 +37,12 @@ public class SpawnManager : MonoBehaviour
         numberOfPlayersOnTeam2 = PlayerPrefs.GetInt("Players Team2", numberOfPlayersOnTeam2);
 
         if (ValidateSpawnPoints()) SpawnPlayers();
-
     }
 
     void SpawnPlayers()
     {
+        // BRUH! Wtf is this function? why did I write it like this?!
+
         //Team1
         while (playersOnTeam1.Length < numberOfPlayersOnTeam1)
         {
@@ -60,7 +61,7 @@ public class SpawnManager : MonoBehaviour
                 continue;
             }
 
-            GameObject player;
+            Player player;
 
             if (playerTeam == 1 && playersOnTeam1.Length == 0)
             {
@@ -72,7 +73,7 @@ public class SpawnManager : MonoBehaviour
             }
 
             player.tag = "Team1";
-            player.transform.GetComponent<MeshRenderer>().material = team1Material;
+            player.MeshRenderer.material = team1Material;
             playersOnTeam1 = MikeArray.Append(playersOnTeam1, player);
         }
 
@@ -94,7 +95,7 @@ public class SpawnManager : MonoBehaviour
                 continue;
             }
 
-            GameObject player;
+            Player player;
 
             if (playerTeam == 2 && playersOnTeam2.Length == 0)
             {
@@ -106,7 +107,7 @@ public class SpawnManager : MonoBehaviour
             }
 
             player.tag = "Team2";
-            player.transform.GetComponent<MeshRenderer>().material = team2Material;
+            player.MeshRenderer.material = team2Material;
             playersOnTeam2 = MikeArray.Append(playersOnTeam2, player);
         }
     }

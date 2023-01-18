@@ -2,13 +2,14 @@
 
 public class Movement : MonoBehaviour
 {
-    public GameObject body;
+    [SerializeField] Transform _movementDirectionReference;
     public float speed = 1;
     public float topSpeed = 10;
     public float jumpHeight = 2f;
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groudMask;
+    [SerializeField, InspectorName("Jump Input Time Tolerance")] float _jumpInputTime = 0.25f;
 
     bool isGrounded;
     Rigidbody rb;
@@ -23,20 +24,24 @@ public class Movement : MonoBehaviour
         rb.velocity = Vector3.zero;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // TODO: Add movement deceleration
 
         DoGroundCheck();
-        Jump();
         SimulateGravity();
         Move();
+    }
+
+    private void Update()
+    {
+        Jump();
     }
 
     private void Move()
     {
         // Input
-        Vector3 force = KeyBinds.Movement.x * transform.right + KeyBinds.Movement.y * transform.forward;
+        Vector3 force = KeyBinds.Movement.x * _movementDirectionReference.right + KeyBinds.Movement.y * _movementDirectionReference.forward;
         rb.velocity = Vector3.ClampMagnitude(force * speed, topSpeed);
 
         rb.velocity += velocityY * Vector3.up;
@@ -50,7 +55,7 @@ public class Movement : MonoBehaviour
 
     private void Jump()
     {
-        if (isGrounded && Input.GetKeyDown(KeyBinds.Jump) && timer >= 0.1f)
+        if (isGrounded && Input.GetKeyDown(KeyBinds.Jump) && timer >= _jumpInputTime)
         {
             velocityY = Mathf.Sqrt(jumpHeight * -2 * gravity);
             timer = 0;

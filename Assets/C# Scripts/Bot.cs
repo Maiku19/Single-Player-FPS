@@ -58,7 +58,6 @@ public class Bot : MonoBehaviour
     Vector3 lastKnownTargetPosition;
     GameObject[] targets = new GameObject[0];
     Vector3 destination;
-    GameObject[] movementPoints = new GameObject[0];
     bool searchForTargets = true;
     bool useDynamicDifficulty = true;
 
@@ -75,7 +74,6 @@ public class Bot : MonoBehaviour
         useDynamicDifficulty = 1 == PlayerPrefs.GetInt($"Use Dynamic Difficulty {tag}", useDynamicDifficulty ? 1 : 0);
         difficulty = PlayerPrefs.GetFloat($"Difficulty {tag}", useDynamicDifficulty ? 1 : 0);
 
-        GetMovementPoints();
         InitializeMovement();
         GetTargetPool();
     }
@@ -109,8 +107,7 @@ public class Bot : MonoBehaviour
         searchForTargets = true;
 
         // Get movement points then set random destination
-        GetMovementPoints();
-        destination = movementPoints[Random.Range(0, movementPoints.Length)].transform.position;
+        SelectRandomDestination();
         agent.destination = destination;
     }
 
@@ -322,12 +319,7 @@ public class Bot : MonoBehaviour
 
     void SelectRandomDestination()
     {
-        destination = movementPoints[Random.Range(0, movementPoints.Length)].transform.position;
-    }
-
-    void GetMovementPoints()
-    {
-        movementPoints = GameObject.FindGameObjectsWithTag("MovementPoint");
+        destination = MovementPoints.Instance.GetRandomMovementPoint().position;
     }
 
     bool CheckIfInLOS(Transform target)

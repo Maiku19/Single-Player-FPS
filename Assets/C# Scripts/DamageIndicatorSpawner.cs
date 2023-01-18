@@ -7,10 +7,10 @@ public class DamageIndicatorSpawner : MonoBehaviour
     public GameObject damageIndicator;
     public Transform spawnParent;
 
-    public void SpawnIndicator(Transform target, Transform reciver)
+    public void SpawnIndicator(Transform target, Player reciver)
     {
         DamageIndicator di = Instantiate(damageIndicator, spawnParent.position, spawnParent.rotation, spawnParent).GetComponent<DamageIndicator>().GetComponent<DamageIndicator>();
         di.target = target;
-        di.reciver = reciver;
+        di.reciver = reciver.Body;
     }
 }

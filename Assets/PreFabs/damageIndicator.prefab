@@ -28,7 +28,8 @@ RectTransform:
   m_GameObject: {fileID: 2594938629970264001}
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0.005}
-  m_LocalScale: {x: 1, y: 0.3, z: 1}
+  m_LocalScale: {x: 0.05, y: 2, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5405942332327967578}
   m_RootOrder: 0
@@ -91,11 +92,11 @@ MonoBehaviour:
   fadeIn: 0
   fadeOut: 1
   alphaPerSec: 1
-  scale: 0
-  scalePerSec: {x: -1, y: -0.3}
-  clampSize: 0
-  sizeClampPos: {x: 1.5, y: 0.45}
-  sizeClampNeg: {x: 0, y: 0}
+  scale: 1
+  scalePerSec: {x: 5, y: -10}
+  clampSize: 1
+  sizeClampPos: {x: 0.1, y: 2}
+  sizeClampNeg: {x: 0.05, y: 0.3}
   text: {fileID: 0}
   image: {fileID: 9195989944346303570}
   sprite: {fileID: 0}
@@ -128,7 +129,8 @@ RectTransform:
   m_GameObject: {fileID: 5162171349115266306}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 5, z: 1}
+  m_LocalScale: {x: 5, y: 3, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6120657800044179294}
   - {fileID: 8126614249261476744}
@@ -192,9 +194,9 @@ MonoBehaviour:
   fadeOut: 0
   alphaPerSec: 0
   scale: 1
-  scalePerSec: {x: 0.01, y: -10}
+  scalePerSec: {x: 0.01, y: -15}
   clampSize: 1
-  sizeClampPos: {x: 5, y: 5}
+  sizeClampPos: {x: 5, y: 3}
   sizeClampNeg: {x: 1, y: 1}
   text: {fileID: 0}
   image: {fileID: 0}
@@ -225,6 +227,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -300}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5405942332327967578}
   m_RootOrder: 1

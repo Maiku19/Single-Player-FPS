@@ -25,7 +25,7 @@ public class Health : MonoBehaviour
     {
         health -= damage;
         if (healthBar != null) healthBar.value = health;
-        if (dis != null) { dis.SpawnIndicator(damager, transform); }
+        if (dis != null) { dis.SpawnIndicator(damager, GetComponent<Player>()); }
 
         // Heal over time
         if(healing != null) StopCoroutine(healing);
