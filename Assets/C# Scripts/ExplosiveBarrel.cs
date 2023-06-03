@@ -6,7 +6,6 @@ public class ExplosiveBarrel : Health
     [SerializeField] private float range;
     [SerializeField] Collider _collider;
 
-    bool _isDead = false;
     public override void Die(GameObject killer)
     {
         if(_isDead) return;
@@ -32,7 +31,7 @@ public class ExplosiveBarrel : Health
 
             if(hit.TryGetComponent(out Player player))
             {
-                if (killer.transform.root.TryGetComponent(out Stats stats) && player.Team != stats.teamId)
+                if (killer.transform.root.TryGetComponent(out Stats stats) && player.Team != stats.TeamId)
                 {
                     Damage(hit, player.Health);
                 }
@@ -47,9 +46,9 @@ public class ExplosiveBarrel : Health
         {
             Vector3 barrelClosestPos = _collider.ClosestPoint(hit.transform.position);
             Vector3 playerClosestPos = hit.ClosestPoint(transform.position);
-            float ammount = (1 - Mathf.Clamp01(Vector3.Distance(barrelClosestPos, playerClosestPos) / range)) * maxDamage;
+            float amount = (1 - Mathf.Clamp01(Vector3.Distance(barrelClosestPos, playerClosestPos) / range)) * maxDamage;
 
-            health.TakeDamage(ammount, transform);
+            health.TakeDamage(amount, transform);
         }
     }
 }

@@ -180,10 +180,10 @@ public class Gun : MonoBehaviour
             bulletInstance.killIndicator = null;
         }
 
-        bulletInstance.speed = bulletSpeed;
-        bulletInstance.shooter = MikeTransform.GetParentOfParents(transform).GetChild(0);
-        bulletInstance.damage = damage;
-        bulletInstance.range = maxRange;
-        bulletInstance.tag = MikeTransform.GetParentOfParents(transform).tag;
+        bulletInstance.Speed = bulletSpeed;
+        bulletInstance.Shooter = transform.root.GetComponent<Player>();
+        bulletInstance.Damage = damage;
+        bulletInstance.Range = maxRange;
+        bulletInstance.tag = transform.root.tag;
     }
 }

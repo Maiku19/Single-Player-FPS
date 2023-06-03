@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 
+// TODO: Cache all WaitForFixedUpdate, WaitForSeconds, etc. in Coroutines (creates garbage)
 public class Bot : MonoBehaviour
 {
     #region Variables
@@ -48,18 +51,19 @@ public class Bot : MonoBehaviour
     public Transform cam;
     public NavMeshAgent agent;
     public Gun gun;
+    [SerializeField] Player _bot;
 
     #endregion
 
     #region Private
 
-    Coroutine aim;
-    GameObject currentTarget;
-    Vector3 lastKnownTargetPosition;
-    GameObject[] targets = new GameObject[0];
-    Vector3 destination;
-    bool searchForTargets = true;
-    bool useDynamicDifficulty = true;
+    Coroutine _aim;
+    GameObject _currentTarget;
+    Vector3 _lastKnownTargetPosition;
+    GameObject[] _targets = new GameObject[0];
+    Vector3 _destination;
+    bool _searchForTargets = true;
+    bool _useDynamicDifficulty = true;
 
     #endregion
 
@@ -71,8 +75,9 @@ public class Bot : MonoBehaviour
 
     void Start()
     {
-        useDynamicDifficulty = 1 == PlayerPrefs.GetInt($"Use Dynamic Difficulty {tag}", useDynamicDifficulty ? 1 : 0);
-        difficulty = PlayerPrefs.GetFloat($"Difficulty {tag}", useDynamicDifficulty ? 1 : 0);
+        // TODO: Put PlayerPrefs in a separate class
+        _useDynamicDifficulty = 1 == PlayerPrefs.GetInt($"Use Dynamic Difficulty {tag}", _useDynamicDifficulty ? 1 : 0);
+        difficulty = PlayerPrefs.GetFloat($"Difficulty {tag}", _useDynamicDifficulty ? 1 : 0);
 
         InitializeMovement();
         GetTargetPool();
@@ -81,10 +86,10 @@ public class Bot : MonoBehaviour
     void Update()
     {
         // Change destination if not targeting any player
-        if (searchForTargets) ChangeRegionWhenAtDestination();
+        if (_searchForTargets) ChangeRegionWhenAtDestination();
 
         // Select the best target in LOS
-        SelectBestTargetIfPosible(targetSelectRefreshRateOffset + targetSelectRefreshRateMultiplier * difficulty);
+        SelectBestTargetIfPossible(1 / (targetSelectRefreshRateOffset + targetSelectRefreshRateMultiplier * difficulty));
         ShootIfTargetInLOS(shootRefreshRateOffset + shootRefreshRateMultiplier * difficulty);
 
         // Update Difficulty based on player skill
@@ -97,38 +102,39 @@ public class Bot : MonoBehaviour
     #region PrivateMethods
     void GetTargetPool()
     {
-        // Set targets to players of the oposit team of player
-        if (transform.CompareTag("Team1")) targets = GameObject.FindGameObjectsWithTag("Team2");
-        else if (transform.CompareTag("Team2")) targets = GameObject.FindGameObjectsWithTag("Team1");
+        // TODO: There is a better way of doing this
+        // Set targets to players of the oposite team of player
+        if (transform.CompareTag("Team1")) _targets = GameObject.FindGameObjectsWithTag("Team2");
+        else if (transform.CompareTag("Team2")) _targets = GameObject.FindGameObjectsWithTag("Team1");
     }
 
     void InitializeMovement()
     {
-        searchForTargets = true;
+        _searchForTargets = true;
 
         // Get movement points then set random destination
         SelectRandomDestination();
-        agent.destination = destination;
+        agent.destination = _destination;
     }
 
-    IEnumerator MoveAtTarget(Transform persuitTarget)
+    IEnumerator MoveAtTarget(Transform pursuitTarget)
     {
         #region Initialization
 
-        searchForTargets = false;
-        float persuitTime = 0;
-        stopRange = 10;
+        _searchForTargets = false;
+        float pursuitTime = 0;
+        stopRange = 10; // TODO: remove hardcode variable
 
-        MoveToDestination(persuitTarget.position);
+        MoveToDestination(pursuitTarget.position);
 
         #endregion
 
         #region Target Visible Logic
 
-        while (currentTarget != null)
+        while (_currentTarget != null)
         {
             StrafeIfAble();
-            StopIfInStopingRange();
+            StopIfInStoppingRange();
 
             yield return null;
         }
@@ -137,20 +143,20 @@ public class Bot : MonoBehaviour
 
         #region Target not visible Logic
 
-        while (currentTarget == null && persuitTime < maxPersuitTimeOffset + maxPersuitTimeMultiplier * difficulty)
+        while (_currentTarget == null && pursuitTime < maxPersuitTimeOffset + maxPersuitTimeMultiplier * difficulty)
         {
-            MoveToDestination(persuitTarget.position);
+            MoveToDestination(pursuitTarget.position);
 
             yield return null;
 
-            persuitTime += Time.deltaTime;
+            pursuitTime += Time.deltaTime;
         }
 
         #endregion
 
         #region Logic After Breaking of persuit
 
-        searchForTargets = true;
+        _searchForTargets = true;
         stopRange = 2;
 
         #endregion
@@ -160,42 +166,44 @@ public class Bot : MonoBehaviour
     {
         if (difficulty < 0 /*threshold*/) { return; }
 
-        // TODO
+        // TODO: Add strafing here
     }
 
-    void StopIfInStopingRange()
+    void StopIfInStoppingRange()
     {
-        if (Vector3.Distance(destination, transform.position) <= stopRange)
+        if (Vector3.Distance(_destination, transform.position) <= stopRange) // TODO: Vector3.Distance() is performance heavy use math.distancesq() instead
         {
-            destination = transform.position;
-            agent.destination = destination;
+            _destination = transform.position;
+            agent.destination = _destination;
         }
     }
 
     void MoveToDestination(Vector3 newDestination)
     {
-        destination = newDestination;
-        agent.destination = destination;
+        _destination = newDestination;
+        agent.destination = _destination;
 
-        StopIfInStopingRange();
+        StopIfInStoppingRange();
     }
 
-    Vector3 targetOffset;
-    float accuracy = 0;
+    Vector3 _targetOffset;
+    float _accuracy = 0;
+    WaitForSeconds _wait = new(.1f);
     IEnumerator Aim()
     {
-        accuracy = 0;
+        _accuracy = 0;
 
-        while (currentTarget != null)
+        while (_currentTarget != null)
         {
             IncreaseAccuracy();
-            AimOffset(accuracy);
+            AimOffset(_accuracy);
             yield return AimAtTarget();
-            yield return new WaitForSeconds(0.1f);
+            yield return _wait;
         }
 
         StopShooting();
 
+        // TODO: Figure out WTF you've done here and fix it as this while loop looks sus
         while (cam.localRotation != Quaternion.Euler(0, 0, 0))
         {
             cam.localRotation = Quaternion.RotateTowards(cam.localRotation, Quaternion.Euler(0,0,0), 36);
@@ -209,16 +217,16 @@ public class Bot : MonoBehaviour
         float max = accuracyIncrementOffset + accuracyIncrementMultiplier * difficulty;
         float min = max - minAccuracyIncrementDifferenceMultiplier / difficulty;
 
-        accuracy += Random.Range(min, max);
-        accuracy = Mathf.Clamp(accuracy, 0, 100);
+        _accuracy += UnityEngine.Random.Range(min, max);
+        _accuracy = Mathf.Clamp(_accuracy, 0, 100);
     }
 
     IEnumerator AimAtTarget()
     {
-        while (currentTarget != null)
+        while (_currentTarget != null)
         {
             float speed = Time.deltaTime * aimSpeedMultiplier * difficulty;
-            Quaternion rotation = Quaternion.LookRotation((transform.position - currentTarget.transform.position + targetOffset).normalized);
+            Quaternion rotation = Quaternion.LookRotation((transform.position - _currentTarget.transform.position + _targetOffset).normalized);
             // Y axis for up/down mouse movement, X axis rotates up/down (camera)
 
             Quaternion lastCamRot = cam.rotation;
@@ -237,42 +245,47 @@ public class Bot : MonoBehaviour
 
     void AimOffset(float accuracy)
     {
-        // Conversion (lower = better)
+        // invert (lower = better)
         accuracy = Mathf.Clamp(accuracy, 0, 100);
         accuracy = 100 - accuracy;
 
-        float xMin = -maxInaccuracyOffset.x + maxInaccuracyMultiplier.x * difficulty * -1;
-        float xMax = maxInaccuracyOffset.x + maxInaccuracyMultiplier.x * difficulty;
-        float x = Random.Range(xMin, xMax);
+        Vector3 v = V3Mul(UnityEngine.Random.insideUnitSphere, (maxInaccuracyOffset + maxInaccuracyMultiplier * difficulty));
+        _targetOffset = accuracy * Vector3.Distance(_currentTarget.transform.position, transform.position) * v;
 
-        float yMin = -maxInaccuracyOffset.y + maxInaccuracyMultiplier.y * difficulty * -1;
-        float yMax = maxInaccuracyOffset.y + maxInaccuracyMultiplier.y * difficulty;
-        float y = Random.Range(yMin, yMax);
 
-        float zMin = -maxInaccuracyOffset.z + maxInaccuracyMultiplier.z * difficulty * -1;
-        float zMax = maxInaccuracyOffset.z + maxInaccuracyMultiplier.z * difficulty;
-        float z = Random.Range(zMin, zMax);
-
-        targetOffset = new Vector3(x, y, z) * Vector3.Distance(currentTarget.transform.position, transform.position) * accuracy;
+        static float GetRandomValue(float minMaxOff, float minMaxMul, float difficulty)
+        {
+            return UnityEngine.Random.Range
+            (
+                -minMaxOff - minMaxMul * difficulty,
+                minMaxOff + minMaxMul * difficulty
+            );
+        }
+        static Vector3 V3Mul(Vector3 a, Vector3 b) => new(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
-    float difficultyDeltaTime = 0;
+    float _difficultyDeltaTime = 0;
     void UpdateDifficulty(float refreshTime)
     {
         // TODO
     }
 
-    float shootLOSCheckDeltaTime = 0;
+    float CalculateDifficultyDeltaBasedOnPlayerScore()
+    {
+        throw new NotImplementedException();
+    }
+
+    float _shootLOSCheckDeltaTime = 0;
     void ShootIfTargetInLOS(float refreshTime)
     {
-        if (currentTarget == null) { return; }
-        if (shootLOSCheckDeltaTime < refreshTime) { shootLOSCheckDeltaTime += Time.deltaTime; return; }
-        else { shootLOSCheckDeltaTime = 0; }
+        if (_currentTarget == null) { return; }
+        if (_shootLOSCheckDeltaTime < refreshTime) { _shootLOSCheckDeltaTime += Time.deltaTime; return; }
+        else { _shootLOSCheckDeltaTime = 0; }
 
-        if (CheckIfInLOS(currentTarget.transform))
+        if (CheckIfInLOS(_currentTarget.transform))
         {
             StartShooting();
-            StartCoroutine(MoveAtTarget(currentTarget.transform));
+            StartCoroutine(MoveAtTarget(_currentTarget.transform));
         }
         else
         {
@@ -280,51 +293,53 @@ public class Bot : MonoBehaviour
         }
     }
 
-    float searchDeltaTime = 0;
-    void SelectBestTargetIfPosible(float searchRefreshTime)
+    float _searchDeltaTime = 0;
+    void SelectBestTargetIfPossible(float searchRefreshTime)
     {
-        if (searchDeltaTime < searchRefreshTime) { searchDeltaTime += Time.deltaTime; return; }
-        else { searchDeltaTime = 0; }
+        if (_searchDeltaTime < searchRefreshTime) { _searchDeltaTime += Time.deltaTime; return; }
+        else { _searchDeltaTime = 0; }
 
         // Loop through all targets in game
-        currentTarget = null;
-        float bestDist = 9999999;
-        foreach (GameObject target in targets)
+        _currentTarget = null;
+        float bestDistanceSq = math.INFINITY;
+        foreach (GameObject target in _targets)
         {
             // check if in LOS
             if (CheckIfInLOS(target.transform))
             {
                 // Compare distance
-                float dist = Vector3.Distance(target.transform.position, transform.position);
-                if (bestDist > dist)
+                float distSq = math.distancesq(target.transform.position, transform.position);
+                if (bestDistanceSq > distSq)
                 {
-                    currentTarget = target;
-                    bestDist = dist;
+                    _currentTarget = target;
+                    bestDistanceSq = distSq;
                 }
             }
         }
 
-        if (currentTarget != null) { lastKnownTargetPosition = currentTarget.transform.position; }
-        if (currentTarget == null) { StopShooting(); }
+        if (_currentTarget != null) { _lastKnownTargetPosition = _currentTarget.transform.position; }
+        if (_currentTarget == null) { StopShooting(); }
     }
 
     void ChangeRegionWhenAtDestination()
     {
-        if (destination != null && Vector3.Distance(destination, transform.position) <= stopRange)
+        if (_destination != null && Vector3.Distance(_destination, transform.position) <= stopRange)
         {
             SelectRandomDestination();
-            agent.destination = destination;
+            agent.destination = _destination;
         }
     }
 
     void SelectRandomDestination()
     {
-        destination = MovementPoints.Instance.GetRandomMovementPoint().position;
+        _destination = MovementPoints.Instance.GetRandomMovementPoint().position;
     }
 
     bool CheckIfInLOS(Transform target)
     {
-        // Get angle twards target
+        // TODO: there is a better way of doing this
+
+        // Get angle towards target
         float angle = Mike.MikeRotation.Vector2ToAngle(transform.position.x - target.position.x, transform.position.z - target.position.z).eulerAngles.z;
 
         if (CheckIfInFOV(Quaternion.AngleAxis(angle, Vector2.up)))
@@ -350,7 +365,7 @@ public class Bot : MonoBehaviour
 
     bool CheckIfInFOV(Quaternion rotation)
     {
-        return Quaternion.Angle(rotation, cam.rotation) <= FOV / 2;
+        return Quaternion.Angle(rotation, cam.rotation) <= FOV * .5f;
     }
 
     void StartShooting()
@@ -358,7 +373,7 @@ public class Bot : MonoBehaviour
         if (gun.shoot) { return; }
 
         gun.shoot = true;
-        aim = StartCoroutine(Aim());
+        _aim = StartCoroutine(Aim());
         stopRange = 10;
     }
 
@@ -367,7 +382,7 @@ public class Bot : MonoBehaviour
         if (!gun.shoot) { return; }
 
         gun.shoot = false;
-        stopRange = 2;
+        stopRange = 2; // TODO: remove hardcoded variable
     }
     #endregion
 

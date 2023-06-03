@@ -2,6 +2,7 @@ using Mike;
 using System.Collections;
 using UnityEngine;
 
+// TODO: Stop using Unity GameObject tags
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private Player playerPrefab;
@@ -33,88 +34,70 @@ public class SpawnManager : MonoBehaviour
 
     private void Start()
     {
+        // TODO: Move this to a separate PlayerPrefs manager class
         numberOfPlayersOnTeam1 = PlayerPrefs.GetInt("Players Team1", numberOfPlayersOnTeam1);
         numberOfPlayersOnTeam2 = PlayerPrefs.GetInt("Players Team2", numberOfPlayersOnTeam2);
 
-        if (ValidateSpawnPoints()) SpawnPlayers();
+        if (ValidateSpawnPoints("SpawnPointsTeam1") && ValidateSpawnPoints("SpawnPointsTeam2")) SpawnPlayers();
     }
 
     void SpawnPlayers()
     {
-        // BRUH! Wtf is this function? why did I write it like this?!
+        SpawnTeam(true, ref playersOnTeam1, numberOfPlayersOnTeam1, GameObject.FindGameObjectWithTag("SpawnPointsTeam1").transform, "Team1", team1Material);
+        SpawnTeam(false, ref playersOnTeam2, numberOfPlayersOnTeam2, GameObject.FindGameObjectWithTag("SpawnPointsTeam2").transform, "Team2", team2Material);
 
-        //Team1
-        while (playersOnTeam1.Length < numberOfPlayersOnTeam1)
+
+        void SpawnTeam(bool humanTeam, ref Player[] teamPlayers, int playersOnTeam, Transform spawnPointParent, string teamTag, Material teamMaterial)
         {
-            Transform spawnPoint = transform;
-
-            Transform spawnPointParent = GameObject.FindGameObjectWithTag("SpawnPointsTeam1").transform;
-
-            int rnd = Random.Range(0, spawnPointParent.childCount);
-
-            if (ValidatePosition(spawnPointParent.GetChild(rnd).position) || numberOfPlayersOnTeam1 > spawnPointParent.childCount)
-            {
-                spawnPoint = spawnPointParent.GetChild(rnd);
-            }
-            else
-            {
-                continue;
-            }
-
+            teamPlayers = new Player[playersOnTeam];
             Player player;
 
-            if (playerTeam == 1 && playersOnTeam1.Length == 0)
+            // both variables are used by GetRandomSpawnPoint()
+            Transform spawnPoint;
+            int rnd; 
+
+            for (int i = 0; i < playersOnTeam; i++)
             {
-                player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-            }
-            else
-            {
-                player = Instantiate(botPrefab, spawnPoint.position, spawnPoint.rotation);
-            }
+                spawnPoint = GetRandomSpawnPoint(100);
 
-            player.tag = "Team1";
-            player.MeshRenderer.material = team1Material;
-            playersOnTeam1 = MikeArray.Append(playersOnTeam1, player);
-        }
+                if (i == 0 && humanTeam) // Spawn the player if human team on the first iteration
+                {
+                    player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+                    player.name = $"Human Player {i} " + teamTag;
+                }
+                else
+                {
+                    player = Instantiate(botPrefab, spawnPoint.position, spawnPoint.rotation);
+                    player.name = $"Player {i} " + teamTag;
+                }
 
-        //Team2
-        while (playersOnTeam2.Length < numberOfPlayersOnTeam2)
-        {
-            Transform spawnPoint = transform;
-
-            Transform spawnPointParent = GameObject.FindGameObjectWithTag("SpawnPointsTeam2").transform;
-
-            int rnd = Random.Range(0, spawnPointParent.childCount);
-
-            if (ValidatePosition(spawnPointParent.GetChild(rnd).position) || numberOfPlayersOnTeam1 > spawnPointParent.childCount)
-            {
-                spawnPoint = spawnPointParent.GetChild(rnd);
-            }
-            else
-            {
-                continue;
+                player.tag = teamTag;
+                player.MeshRenderer.sharedMaterial = teamMaterial;
+                teamPlayers[i] = player;
             }
 
-            Player player;
 
-            if (playerTeam == 2 && playersOnTeam2.Length == 0)
+            Transform GetRandomSpawnPoint(int tries)
             {
-                player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-            }
-            else
-            {
-                player = Instantiate(botPrefab, spawnPoint.position, spawnPoint.rotation);
-            }
+                // TODO: "Anything that can go wrong will go wrong." (There is a (1 in tries * spawnPointParent.childCount - 1) chance that this can go wrong)
+                for (int i = 0; i < tries; i++) // failsafe
+                {
+                    rnd = Random.Range(0, spawnPointParent.childCount);
 
-            player.tag = "Team2";
-            player.MeshRenderer.material = team2Material;
-            playersOnTeam2 = MikeArray.Append(playersOnTeam2, player);
+                    if (ValidatePosition(spawnPointParent.GetChild(rnd).position) || playersOnTeam > spawnPointParent.childCount)
+                    {
+                        return spawnPointParent.GetChild(rnd);
+                    }
+                }
+
+                throw new("No valid spawnPoints");
+            }
         }
     }
 
-    bool ValidateSpawnPoints()
+    bool ValidateSpawnPoints(string spawnPointParentTag)
     {
-        Transform spawnPointParent = GameObject.FindGameObjectWithTag("SpawnPointsTeam2").transform;
+        Transform spawnPointParent = GameObject.FindGameObjectWithTag(spawnPointParentTag).transform;
 
         foreach (Transform spawnPoint in spawnPointParent)
         {
@@ -129,12 +112,13 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(RespawnPlayer(player));
     }
 
+    WaitForSeconds _wait;
     IEnumerator RespawnPlayer(GameObject player)
     {
-        yield return new WaitForSeconds(respawnTime);
+        yield return _wait ??= new WaitForSeconds(respawnTime);
 
         Transform spawnPoint = transform;
-        Transform spawnPointParent = GameObject.FindGameObjectWithTag(player.tag == "Team1" ? "SpawnPointsTeam1" : "SpawnPointsTeam2").transform;
+        Transform spawnPointParent = GameObject.FindGameObjectWithTag(player.CompareTag("Team1") ? "SpawnPointsTeam1" : "SpawnPointsTeam2").transform;
 
         while (spawnPoint == transform)
         {
@@ -152,8 +136,7 @@ public class SpawnManager : MonoBehaviour
             yield return null;
         }
 
-        player.transform.position = spawnPoint.position;
-        player.transform.rotation = spawnPoint.rotation;
+        player.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
 
         player.transform.GetComponent<Health>().Respawn();
     }

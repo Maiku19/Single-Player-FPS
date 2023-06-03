@@ -12,8 +12,8 @@ public class Health : MonoBehaviour
     public DamageIndicatorSpawner dis;
     public GameObject deathFX;
 
-    bool isDead = false;
-    Coroutine healing;
+    protected bool _isDead = false;
+    Coroutine _healing;
 
     void Awake()
     {
@@ -28,8 +28,8 @@ public class Health : MonoBehaviour
         if (dis != null) { dis.SpawnIndicator(damager, GetComponent<Player>()); }
 
         // Heal over time
-        if(healing != null) StopCoroutine(healing);
-        healing = StartCoroutine(Heal(healingDelay));
+        if(_healing != null) StopCoroutine(_healing);
+        _healing = StartCoroutine(Heal(healingDelay));
 
         if (health <= 0)
         {
@@ -39,47 +39,49 @@ public class Health : MonoBehaviour
 
     public virtual void Die(GameObject killer)
     {
-        if (isDead) { return; }
+        if (_isDead) { return; }
 
-        if(GetComponent<Bot>() != null)
+        if(TryGetComponent(out Bot bot))
         {
-            GetComponent<Bot>().StopAllCoroutines();
-            GetComponent<Bot>().OnDeath();
+            bot.StopAllCoroutines();
+            bot.OnDeath();
         }
 
         Instantiate(deathFX, transform.position, Quaternion.identity);
+
+        if(TryGetComponent(out Stats stats)) stats.Deaths++;
+
         ScoreManager.Instance.OnPlayerDied(gameObject);
-        if(TryGetComponent(out Stats stats)) stats.deaths += 1;
-        isDead = true;
-        SpawnManager.Instance.Respawn(Mike.MikeTransform.GetParentOfParents(transform).gameObject);
+        SpawnManager.Instance.Respawn(transform.root.gameObject);
+
         gameObject.SetActive(false);
+        _isDead = true;
     }
 
     public void Respawn()
     {
-        isDead = false;
+        _isDead = false;
         gameObject.SetActive(true);
         GetComponentInChildren<Gun>().RefillMag();
 
         health = maxHealth;
         if (healthBar != null) healthBar.value = health;
 
-        if (GetComponent<Bot>() != null)
+        if (TryGetComponent(out Bot bot))
         {
-            GetComponent<Bot>().OnRespawn();
+            bot.OnRespawn();
         }
     }
 
+    WaitForSeconds _delay;
     IEnumerator Heal(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        yield return _delay ??= new WaitForSeconds(delay);
 
         while (health < maxHealth)
         {
-            health += healthPerSec * Time.deltaTime;
+            health = Mathf.Clamp(health + healthPerSec * Time.deltaTime, 0, maxHealth);
             if(healthBar != null) healthBar.value = health;
-
-            health = Mathf.Clamp(health, 0, maxHealth);
 
             yield return null;
         }

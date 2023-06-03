@@ -62,13 +62,15 @@ public class ScoreManager : MonoBehaviour
 
     public void IncrementScore(int id, float score)
     {
+        // BRUH! looking at my old code makes my want to kms
+
         if (!matchInProgress) { return; }
 
         if(id == 1)
         {
             Score1 += score;
             GameObject scoreCounter = GameObject.FindGameObjectWithTag("Score1");
-            scoreCounter.GetComponent<TMPro.TextMeshProUGUI>().text = Score1.ToString();
+            scoreCounter.GetComponent<TextMeshProUGUI>().text = Score1.ToString();
             scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().value = Score1;
             scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().maxValue = victoryConditionTeam1;
         }
@@ -76,12 +78,10 @@ public class ScoreManager : MonoBehaviour
         {
             Score2 += score; 
             GameObject scoreCounter = GameObject.FindGameObjectWithTag("Score2");
-            scoreCounter.GetComponent<TMPro.TextMeshProUGUI>().text = Score2.ToString();
+            scoreCounter.GetComponent<TextMeshProUGUI>().text = Score2.ToString();
             scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().value = Score2;
             scoreCounter.transform.parent.GetComponent<UnityEngine.UI.Slider>().maxValue = victoryConditionTeam2;
         }
-
-        
 
         EndGameIfAble();
     }
@@ -133,32 +133,28 @@ public class ScoreManager : MonoBehaviour
     void DeclareWiner()
     {
         if(Score1 >= victoryConditionTeam1) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam1Victory(); }
-        if(Score2 >= victoryConditionTeam2) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam2Victory(); }
+        else if(Score2 >= victoryConditionTeam2) { GameObject.FindGameObjectWithTag("EndGameScreen").GetComponent<EndGameScreen>().OnTeam2Victory(); }
     }
 
     private static void Initialize()
     {
-        // IDK y but variables don't reset after scene change
+        // Reset variables on scene reload (because they are static variables)
         matchInProgress = true;
         Score1 = 0;
         Score2 = 0;
-        team1Players = new Stats[0];
-        team2Players = new Stats[0];
 
-        GameObject[] t1 = GameObject.FindGameObjectsWithTag("Team1");
-        team1Players = new Stats[t1.Length];
+        AddPlayers(ref team1Players, "Team1");
+        AddPlayers(ref team2Players, "Team2");
 
-        for (int i = 0; i < t1.Length; i++)
+        static void AddPlayers(ref Stats[] teamStats, string teamTag)
         {
-            team1Players[i] = t1[i].GetComponent<Stats>();
-        }
+            GameObject[] team = GameObject.FindGameObjectsWithTag(teamTag);
+            teamStats = new Stats[team.Length];
 
-        GameObject[] t2 = GameObject.FindGameObjectsWithTag("Team2");
-        team2Players = new Stats[t2.Length];
-
-        for (int i = 0; i < t2.Length; i++)
-        {
-            team2Players[i] = t1[i].GetComponent<Stats>();
+            for (int i = 0; i < team.Length; i++)
+            {
+                teamStats[i] = team[i].GetComponent<Stats>();
+            }
         }
     }
 
@@ -170,25 +166,17 @@ public class ScoreManager : MonoBehaviour
 
     static void SortArray(int id)
     {
-        Stats[] array = id == 1 ? team1Players : team2Players;
-        bool sorted;
-        
-        do
-        {
-            sorted = true;
+        List<Stats> array = new(id == 1 ? team1Players : team2Players);
 
-            for (int i = 0; i < array.Length - 1; i++)
-            {
-                Stats current = array[i];
-                Stats next = array[i + 1];
+        array.Sort((a, b) =>
+        { 
+            if(a.Score > b.Score) { return -1; } 
+            else if(a.Score == b.Score) { return 0;}
+            else { return 1;}
+        });
 
-                if(current.Score < next.Score)
-                {
-                    sorted = false;
-                    array = Mike.MikeArray.Swap(array, i, i + 1);
-                }
-            }
-        }
-        while (!sorted);
+        if (id == 1) { SetArray(ref team1Players); } else { SetArray(ref team2Players); }
+
+        void SetArray(ref Stats[] stats) => stats = array.ToArray();
     }
 }

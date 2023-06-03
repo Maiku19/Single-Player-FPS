@@ -58,22 +58,22 @@ public class ScoreBoardManager : MonoBehaviour
 
         for (int i = 0; i < team1.Length; i++)
         {
-            slotsTeam1[i].Name = team1[i].playerName;
+            slotsTeam1[i].Name = team1[i].PlayerName;
             slotsTeam1[i].Score = team1[i].Score;
-            slotsTeam1[i].Kills = team1[i].kills;
-            slotsTeam1[i].Deaths = team1[i].deaths;
-            slotsTeam1[i].Assists = team1[i].assists;
+            slotsTeam1[i].Kills = team1[i].Kills;
+            slotsTeam1[i].Deaths = team1[i].Deaths;
+            slotsTeam1[i].Assists = team1[i].Assists;
         }
         
         Stats[] team2 = ScoreManager.SortedTeam2;
 
         for (int i = 0; i < team2.Length; i++)
         {
-            slotsTeam2[i].Name = team2[i].playerName;
+            slotsTeam2[i].Name = team2[i].PlayerName;
             slotsTeam2[i].Score = team2[i].Score;
-            slotsTeam2[i].Kills = team2[i].kills;
-            slotsTeam2[i].Deaths = team2[i].deaths;
-            slotsTeam2[i].Assists = team2[i].assists;
+            slotsTeam2[i].Kills = team2[i].Kills;
+            slotsTeam2[i].Deaths = team2[i].Deaths;
+            slotsTeam2[i].Assists = team2[i].Assists;
         }
 
         holder.SetActive(true);

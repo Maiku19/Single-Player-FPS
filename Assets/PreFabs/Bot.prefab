@@ -188,8 +188,8 @@ MonoBehaviour:
   FOV: 360
   shootRefreshRateMultiplier: 0.02
   shootRefreshRateOffset: 0
-  targetSelectRefreshRateMultiplier: 0.01
-  targetSelectRefreshRateOffset: 0
+  targetSelectRefreshRateMultiplier: 0.15
+  targetSelectRefreshRateOffset: 0.1
   maxInaccuracyMultiplier: {x: 0.0005, y: 0.00025, z: 0.0005}
   maxInaccuracyOffset: {x: 0, y: 0, z: 0}
   accuracyIncrementMultiplier: 7
@@ -204,6 +204,7 @@ MonoBehaviour:
   cam: {fileID: 6872566912431306243}
   agent: {fileID: 3983381813225130310}
   gun: {fileID: 2259965995094311268}
+  _bot: {fileID: 0}
 --- !u!33 &1988239791932236627
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -262,8 +263,17 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988239791932236630}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
+  serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -275,13 +285,24 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988239791932236630}
-  serializedVersion: 2
+  serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!195 &3983381813225130310
@@ -294,7 +315,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 10
+  m_Speed: 15
   m_Acceleration: 100
   avoidancePriority: 50
   m_AngularSpeed: 500
@@ -423,6 +444,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8886558828251416511
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,6 +507,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
+    FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
   m_Transitions:
     m_BlendHint: 0
@@ -499,6 +522,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 2917288610273839868}
     m_Modifications:
     - target: {fileID: 718143357255315976, guid: 0b37c3bcb0e893f4d956d73a65bbf74f, type: 3}
@@ -606,6 +630,9 @@ PrefabInstance:
       value: Reload1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b37c3bcb0e893f4d956d73a65bbf74f, type: 3}
 --- !u!114 &2259965995094311268 stripped
 MonoBehaviour:
