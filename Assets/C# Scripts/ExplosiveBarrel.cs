@@ -32,7 +32,7 @@ public class ExplosiveBarrel : Health
 
             if(hit.TryGetComponent(out Player player))
             {
-                if (player.Team != killer.transform.root.GetComponent<Stats>().teamId)
+                if (killer.transform.root.TryGetComponent(out Stats stats) && player.Team != stats.teamId)
                 {
                     Damage(hit, player.Health);
                 }
@@ -47,7 +47,7 @@ public class ExplosiveBarrel : Health
         {
             Vector3 barrelClosestPos = _collider.ClosestPoint(hit.transform.position);
             Vector3 playerClosestPos = hit.ClosestPoint(transform.position);
-            float ammount = Mathf.Clamp01(Vector3.Distance(barrelClosestPos, playerClosestPos) / range) * maxDamage;
+            float ammount = (1 - Mathf.Clamp01(Vector3.Distance(barrelClosestPos, playerClosestPos) / range)) * maxDamage;
 
             health.TakeDamage(ammount, transform);
         }

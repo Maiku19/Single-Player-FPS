@@ -13,5 +13,4 @@ namespace Mike
             Destroy(gameObject, delay);
         }
     }
-
 }

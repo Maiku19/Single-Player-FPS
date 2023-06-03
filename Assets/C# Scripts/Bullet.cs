@@ -6,6 +6,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] public GameObject hitEffect;
     [SerializeField] public GameObject hitIndicator;
     [SerializeField] public GameObject killIndicator;
+    [SerializeField] public GameObject _decal;
 
     [HideInInspector] public float speed;
     [HideInInspector] public float damage;
@@ -46,6 +47,10 @@ public class Bullet : MonoBehaviour
         // check for friendly fire
         if (hit.transform.root.CompareTag(tag) && hit.transform.gameObject.layer != 6) { return; }
 
+        if(_decal != null)
+        {
+            Instantiate(_decal, transform.position, transform.rotation);
+        }
 
         if(hit.transform.TryGetComponent(out Health h)) h.TakeDamage(damage, shooter);
         else { return; }

@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2880663102810109275}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.0462}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -49,6 +49,7 @@ MonoBehaviour:
   hitEffect: {fileID: 8831998625960621754, guid: 5b3af8cbfbe09e3448592dbb2e38435d, type: 3}
   hitIndicator: {fileID: 7950532994951851176, guid: 980f294b386114d4aa222758b0cea150, type: 3}
   killIndicator: {fileID: 7950532994951851176, guid: 4c7ef7c351d39d34e916df65d34b5514, type: 3}
+  _decal: {fileID: 6910434079143169146, guid: 20ae0a9e20ceb3e45966bef67256c8b0, type: 3}
   speed: 0
   damage: 0
   range: 0

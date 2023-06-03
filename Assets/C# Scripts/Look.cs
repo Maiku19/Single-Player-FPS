@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Look : MonoBehaviour
 {
@@ -8,20 +9,22 @@ public class Look : MonoBehaviour
 
     public Transform playerBody;
     public Transform fpsCamera;
-    float xRotation = 0f;
+    float _xRotation = 0f;
 
-    public static Look Instance { get { return _Instance; } }
-    static Look _Instance;
+    public static Look Instance { get { return _instance; } }
+    static Look _instance;
 
-    public float MouseX { get; private set; }
-    public float MouseY { get; private set; }
+    public float MouseX { get => Input.GetAxis("Mouse X") * mouseSensitivity * 100 * Time.deltaTime; }
+    public float MouseY { get => Input.GetAxis("Mouse Y") * mouseSensitivity * 100 * Time.deltaTime; }
+
+    public event UnityAction OnPreRotate;
+    public event UnityAction OnPostRotate;
 
     private void Awake()
     {
-        _Instance = this;
+        _instance = this;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", 1);
@@ -29,16 +32,16 @@ public class Look : MonoBehaviour
         Cursor.visible = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        MouseX = Input.GetAxis("Mouse X") * mouseSensitivity * 100 * Time.deltaTime;
-        MouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * 100 * Time.deltaTime;
+        _xRotation -= MouseY;
+        _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
 
-        xRotation -= MouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        OnPreRotate?.Invoke();
 
-        fpsCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        fpsCamera.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
         playerBody.Rotate(Vector3.up * MouseX);
+
+        OnPostRotate?.Invoke();
     }
 }

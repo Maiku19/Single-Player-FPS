@@ -15,6 +15,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private Slider sensSlider;
     [SerializeField] private TMP_InputField sensInput;
 
+
     void Start()
     {
         InitializeRes();
